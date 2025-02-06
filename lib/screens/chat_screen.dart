@@ -10,8 +10,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 class ChatScreen extends StatelessWidget {
   final String contractId;
-  
-const ChatScreen({super.key, required this.contractId});
+
+  const ChatScreen({super.key, required this.contractId});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,6 @@ const ChatScreen({super.key, required this.contractId});
 
         final contract = contractSnapshot.data!;
 
-        
         if (contract.status != 'accepted') {
           return Scaffold(
             appBar: AppBar(title: const Text('Chat Unavailable')),
@@ -49,7 +48,6 @@ const ChatScreen({super.key, required this.contractId});
         }
 
         return Scaffold(
-          appBar: AppBar(title: Text(contract.title)),
           body: Column(
             children: [
               Expanded(
@@ -68,7 +66,7 @@ const ChatScreen({super.key, required this.contractId});
                     }
 
                     final messages = messageSnapshot.data ?? [];
-                     return ListView.builder(
+                    return ListView.builder(
                       reverse: true,
                       itemCount: messages.length,
                       itemBuilder: (context, index) {
@@ -79,14 +77,13 @@ const ChatScreen({super.key, required this.contractId});
                         return Slidable(
                           key: ValueKey(message.id),
                           direction: Axis.horizontal,
-                          enabled:
-                              isCurrentUser,
+                          enabled: isCurrentUser,
                           startActionPane: ActionPane(
                             motion: const DrawerMotion(),
                             children: [
                               SlidableAction(
-                                onPressed: (_) =>
-                                    _handleEditMessage(context, message,contractId),
+                                onPressed: (_) => _handleEditMessage(
+                                    context, message, contractId),
                                 backgroundColor: Colors.blue,
                                 icon: Icons.edit,
                                 label: 'Edit',
@@ -97,8 +94,8 @@ const ChatScreen({super.key, required this.contractId});
                             motion: const DrawerMotion(),
                             children: [
                               SlidableAction(
-                                onPressed: (_) =>
-                                    _handleDeleteMessage(context, message,contractId),
+                                onPressed: (_) => _handleDeleteMessage(
+                                    context, message, contractId),
                                 backgroundColor: Colors.red,
                                 icon: Icons.delete,
                                 label: 'Delete',
@@ -128,72 +125,74 @@ const ChatScreen({super.key, required this.contractId});
       },
     );
   }
-  void _handleEditMessage(BuildContext context, Message message,String contractId) {
-  final textController = TextEditingController(text: message.text);
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Edit Message'),
-      content: TextField(controller: textController),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () async {
-            try {
-              await Provider.of<FirestoreService>(context, listen: false)
-                  .editMessage(
-                contractId:contractId, 
-                messageId: message.id,
-                newText: textController.text.trim(),
-              );
-              Navigator.pop(context);
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error editing message: $e')),
-              );
-            }
-          },
-          child: const Text('Save'),
-        ),
-      ],
-    ),
-  );
-}
 
-void _handleDeleteMessage(BuildContext context, Message message,String contractId) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Delete Message'),
-      content: const Text('Are you sure?'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () async {
-            try {
-              await Provider.of<FirestoreService>(context, listen: false)
-                  .deleteMessage(
-                contractId:contractId, 
-                messageId: message.id,
-              );
-              Navigator.pop(context);
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error deleting message: $e')),
-              );
-            }
-          },
-          child: const Text('Delete'),
-        ),
-      ],
-    ),
-  );
-}
-}
+  void _handleEditMessage(
+      BuildContext context, Message message, String contractId) {
+    final textController = TextEditingController(text: message.text);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Message'),
+        content: TextField(controller: textController),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              try {
+                await Provider.of<FirestoreService>(context, listen: false)
+                    .editMessage(
+                  contractId: contractId,
+                  messageId: message.id,
+                  newText: textController.text.trim(),
+                );
+                Navigator.pop(context);
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error editing message: $e')),
+                );
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
 
+  void _handleDeleteMessage(
+      BuildContext context, Message message, String contractId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Message'),
+        content: const Text('Are you sure?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              try {
+                await Provider.of<FirestoreService>(context, listen: false)
+                    .deleteMessage(
+                  contractId: contractId,
+                  messageId: message.id,
+                );
+                Navigator.pop(context);
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error deleting message: $e')),
+                );
+              }
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+}

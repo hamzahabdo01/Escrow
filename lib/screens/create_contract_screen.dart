@@ -12,7 +12,7 @@ class CreateContractScreen extends StatefulWidget {
   const CreateContractScreen({super.key, this.contract});
 
   @override
-  State<CreateContractScreen> createState() => _CreateContractScreenState();
+  State createState() => _CreateContractScreenState();
 }
 
 class _CreateContractScreenState extends State<CreateContractScreen> {
@@ -27,7 +27,6 @@ class _CreateContractScreenState extends State<CreateContractScreen> {
   @override
   void initState() {
     super.initState();
-
     if (widget.contract != null) {
       final contract = widget.contract!;
       _titleController.text = contract.title;
@@ -42,7 +41,6 @@ class _CreateContractScreenState extends State<CreateContractScreen> {
               Provider.of<FirestoreService>(context, listen: false);
           final receiver =
               await firestoreService.getUserById(contract.receiverId);
-
           if (receiver != null) {
             setState(() {
               _selectedReceiver = receiver;
@@ -87,8 +85,13 @@ class _CreateContractScreenState extends State<CreateContractScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            widget.contract == null ? 'Create New Contract' : 'Edit Contract'),
+          widget.contract == null ? 'Create New Contract' : 'Edit Contract',
+          style: const TextStyle(
+              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
+        backgroundColor: const Color(0xFF059EDB),
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -98,10 +101,14 @@ class _CreateContractScreenState extends State<CreateContractScreen> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Contract Title',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.title),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  prefixIcon: const Icon(Icons.title, color: Color(0xFF059EDB)),
+                  filled: true,
+                  fillColor: Colors.grey[100],
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -111,14 +118,15 @@ class _CreateContractScreenState extends State<CreateContractScreen> {
                 },
               ),
               const SizedBox(height: 20),
-
               ListTile(
                 title: Text(
                   _startDate == null
                       ? 'Select Start Date'
                       : 'Start Date: ${DateFormat.yMMMMd().format(_startDate!)}',
+                  style: const TextStyle(fontSize: 16),
                 ),
-                trailing: const Icon(Icons.calendar_today),
+                trailing:
+                    const Icon(Icons.calendar_today, color: Color(0xFFF2D04C)),
                 shape: RoundedRectangleBorder(
                   side: const BorderSide(color: Colors.grey),
                   borderRadius: BorderRadius.circular(8),
@@ -126,14 +134,15 @@ class _CreateContractScreenState extends State<CreateContractScreen> {
                 onTap: () => _selectDate(context, true),
               ),
               const SizedBox(height: 10),
-              // End Date Picker
               ListTile(
                 title: Text(
                   _endDate == null
                       ? 'Select End Date'
                       : 'End Date: ${DateFormat.yMMMMd().format(_endDate!)}',
+                  style: const TextStyle(fontSize: 16),
                 ),
-                trailing: const Icon(Icons.calendar_today),
+                trailing:
+                    const Icon(Icons.calendar_today, color: Color(0xFFF2D04C)),
                 shape: RoundedRectangleBorder(
                   side: const BorderSide(color: Colors.grey),
                   borderRadius: BorderRadius.circular(8),
@@ -141,7 +150,6 @@ class _CreateContractScreenState extends State<CreateContractScreen> {
                 onTap: () => _selectDate(context, false),
               ),
               const SizedBox(height: 20),
-
               Row(
                 children: [
                   Expanded(
@@ -149,11 +157,16 @@ class _CreateContractScreenState extends State<CreateContractScreen> {
                     child: TextFormField(
                       controller: _paymentAmountController,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Amount',
                         prefixText: '\$ ',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.attach_money),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        prefixIcon: const Icon(Icons.attach_money,
+                            color: Color(0xFF059EDB)),
+                        filled: true,
+                        fillColor: Colors.grey[100],
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -171,10 +184,15 @@ class _CreateContractScreenState extends State<CreateContractScreen> {
                     flex: 3,
                     child: TextFormField(
                       controller: _paymentTermsController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Payment Terms',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.description),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        prefixIcon: const Icon(Icons.description,
+                            color: Color(0xFF059EDB)),
+                        filled: true,
+                        fillColor: Colors.grey[100],
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -187,26 +205,33 @@ class _CreateContractScreenState extends State<CreateContractScreen> {
                 ],
               ),
               const SizedBox(height: 25),
-
               FutureBuilder<List<AppUser>>(
                 future: firestoreService.getUsers(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
+                    return const Center(
+                        child: CircularProgressIndicator(
+                            color: Color(0xFF059EDB)));
                   }
                   if (snapshot.hasError) {
-                    return Text('Error loading users: ${snapshot.error}');
+                    return Text('Error loading users: ${snapshot.error}',
+                        style: const TextStyle(color: Colors.red));
                   }
                   final users = snapshot.data ?? [];
                   return DropdownButtonFormField<AppUser>(
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Select Receiver',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person_search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      prefixIcon: const Icon(Icons.person_search,
+                          color: Color(0xFF059EDB)),
+                      filled: true,
+                      fillColor: Colors.grey[100],
                     ),
                     value: _selectedReceiver,
                     items: users
-                        .map((user) => DropdownMenuItem<AppUser>(
+                        .map((user) => DropdownMenuItem(
                               value: user,
                               child: Text(user.firstName),
                             ))
@@ -223,24 +248,16 @@ class _CreateContractScreenState extends State<CreateContractScreen> {
                 },
               ),
               const SizedBox(height: 30),
-
               ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
                 onPressed: () async {
                   if (_formKey.currentState!.validate() &&
                       _startDate != null &&
                       _endDate != null &&
                       _selectedReceiver != null) {
                     try {
-                      final currentUser = authService.user;
+                      final currentUser = authService.currentUser;
                       if (currentUser == null)
                         throw Exception('User not logged in');
-
                       final contract = Contract(
                         id: widget.contract?.id ?? '',
                         title: _titleController.text,
@@ -253,24 +270,33 @@ class _CreateContractScreenState extends State<CreateContractScreen> {
                         paymentTerms: _paymentTermsController.text,
                         createdAt: widget.contract?.createdAt ?? DateTime.now(),
                       );
-
                       if (widget.contract == null) {
                         await firestoreService.createContract(contract);
                       } else {
                         await firestoreService.updateContract(contract);
                       }
-
                       Navigator.pop(context);
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error saving contract: $e')),
+                        SnackBar(
+                            content: Text('Error saving contract: $e',
+                                style: const TextStyle(color: Colors.white)),
+                            backgroundColor: Colors.red),
                       );
                     }
                   }
                 },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  backgroundColor: const Color(0xFF059EDB),
+                  foregroundColor: Colors.white,
+                ),
                 child: Text(
                   widget.contract == null ? 'Create Contract' : 'Save Changes',
-                  style: const TextStyle(fontSize: 16),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ],

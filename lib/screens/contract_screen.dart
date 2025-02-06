@@ -22,13 +22,16 @@ class _ContractScreenState extends State<ContractScreen> {
     bool shouldDelete = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Confirm Deletion'),
-            content:
-                const Text('Are you sure you want to delete this contract?'),
+            title: const Text('Confirm Deletion',
+                style: TextStyle(color: Color(0xFF059EDB))),
+            content: const Text(
+                'Are you sure you want to delete this contract?',
+                style: TextStyle(color: Colors.black87)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
+                child:
+                    const Text('Cancel', style: TextStyle(color: Colors.grey)),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context, true),
@@ -44,17 +47,22 @@ class _ContractScreenState extends State<ContractScreen> {
       try {
         final firestoreService =
             Provider.of<FirestoreService>(context, listen: false);
-        await firestoreService
-            .deleteContract(contract.id); // Ensure contract.id is non-null
+        await firestoreService.deleteContract(contract.id);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Contract deleted successfully')),
+            const SnackBar(
+                content: Text('Contract deleted successfully',
+                    style: TextStyle(color: Colors.white)),
+                backgroundColor: Color(0xFF059EDB)),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error deleting contract: $e')),
+            SnackBar(
+                content: Text('Error deleting contract: $e',
+                    style: TextStyle(color: Colors.white)),
+                backgroundColor: Colors.red),
           );
         }
       }
@@ -79,17 +87,23 @@ class _ContractScreenState extends State<ContractScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('My Contracts'),
+        backgroundColor: const Color(0xFF059EDB),
+        elevation: 0,
+        title: const Text(
+          'My Contracts',
+          style: TextStyle(
+              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: const Icon(Icons.add, color: Colors.white, size: 30),
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const CreateContractScreen()),
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Colors.white, size: 30),
             onPressed: () async {
               await authService.signOut();
               Navigator.pushReplacement(
@@ -108,7 +122,11 @@ class _ContractScreenState extends State<ContractScreen> {
             builder: (context, receivedSnapshot) {
               if (sentSnapshot.connectionState == ConnectionState.waiting ||
                   receivedSnapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF059EDB),
+                  ),
+                );
               }
 
               final sentContracts = sentSnapshot.data ?? [];
@@ -120,7 +138,10 @@ class _ContractScreenState extends State<ContractScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('No contracts found'),
+                      const Text(
+                        'No contracts found',
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () => Navigator.push(
@@ -129,7 +150,17 @@ class _ContractScreenState extends State<ContractScreen> {
                             builder: (_) => const CreateContractScreen(),
                           ),
                         ),
-                        child: const Text('Create New Contract'),
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: const Color(0xFF059EDB),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                        ),
+                        child: const Text('Create New Contract',
+                            style: TextStyle(fontSize: 16)),
                       ),
                     ],
                   ),
@@ -142,60 +173,101 @@ class _ContractScreenState extends State<ContractScreen> {
                   final contract = allContracts[index];
                   final isSender = contract.senderId == currentUser.id;
 
-                  return Slidable(
-                    key: ValueKey(contract.id),
-                    startActionPane: ActionPane(
-                      motion: const DrawerMotion(),
-                      children: [
-                        if (isSender)
-                          SlidableAction(
-                            onPressed: (_) =>
-                                _handleEditContract(context, contract),
-                            backgroundColor: Colors.blue,
-                            icon: Icons.edit,
-                            label: 'Edit',
-                          ),
-                      ],
+                  return Card(
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    endActionPane: ActionPane(
-                      motion: const DrawerMotion(),
-                      children: [
-                        if (isSender)
-                          SlidableAction(
-                            onPressed: (_) =>
-                                _handleDeleteContract(context, contract),
-                            backgroundColor: Colors.red,
-                            icon: Icons.delete,
-                            label: 'Delete',
-                          ),
-                      ],
-                    ),
-                    child: ListTile(
-                      title: Text(contract.title),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Slidable(
+                      key: ValueKey(contract.id),
+                      startActionPane: ActionPane(
+                        motion: const DrawerMotion(),
                         children: [
-                          Text('Status: ${contract.status}'),
-                          Text(
-                              'With: ${isSender ? contract.receiverId : contract.senderId}'),
-                          Text(
-                              '${DateFormat.yMd().format(contract.startDate)} - ${DateFormat.yMd().format(contract.endDate)}'),
-                          Text(
-                              '\$${contract.paymentAmount} - ${contract.paymentTerms}'),
+                          if (isSender)
+                            SlidableAction(
+                              onPressed: (_) =>
+                                  _handleEditContract(context, contract),
+                              backgroundColor: const Color(0xFFF2D04C),
+                              icon: Icons.edit,
+                              label: 'Edit',
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                bottomLeft: Radius.circular(10),
+                              ),
+                            ),
                         ],
                       ),
-                      trailing: contract.status == 'sent' && isSender
-                          ? const Icon(Icons.pending_actions)
-                          : null,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                ContractDetailScreen(contract: contract),
-                          ),
-                        );
-                      },
+                      endActionPane: ActionPane(
+                        motion: const DrawerMotion(),
+                        children: [
+                          if (isSender)
+                            SlidableAction(
+                              onPressed: (_) =>
+                                  _handleDeleteContract(context, contract),
+                              backgroundColor: Colors.red,
+                              icon: Icons.delete,
+                              label: 'Delete',
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(10),
+                                bottomRight: Radius.circular(10),
+                              ),
+                            ),
+                        ],
+                      ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(16),
+                        title: Text(
+                          contract.title,
+                          style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF059EDB)),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Status: ${contract.status}',
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.black87),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'With: ${isSender ? contract.receiverId : contract.senderId}',
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.black87),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${DateFormat.yMd().format(contract.startDate)} - ${DateFormat.yMd().format(contract.endDate)}',
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.black87),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '\$${contract.paymentAmount} - ${contract.paymentTerms}',
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.black87),
+                            ),
+                          ],
+                        ),
+                        trailing: contract.status == 'sent' && isSender
+                            ? const Icon(Icons.pending_actions,
+                                color: Color(0xFFF2D04C), size: 24)
+                            : null,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  ContractDetailScreen(contract: contract),
+                            ),
+                          );
+                        },
+                        tileColor: Colors.white,
+                      ),
                     ),
                   );
                 },
@@ -210,7 +282,8 @@ class _ContractScreenState extends State<ContractScreen> {
           MaterialPageRoute(builder: (_) => const PendingContractsScreen()),
         ),
         tooltip: 'View Pending Contracts',
-        child: const Icon(Icons.assignment),
+        backgroundColor: const Color(0xFFF2D04C),
+        child: const Icon(Icons.assignment, color: Colors.black87, size: 30),
       ),
     );
   }
